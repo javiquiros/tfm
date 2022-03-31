@@ -4,12 +4,21 @@ services:
     build: .
     ports:
       - "8000:5000"
+    volumes:
+      - .:/code
+    environment:
+      FLASK_ENV: development
+      PYTHONUNBUFFERED: 1
   mongodb:
     image: "mongo:5.0.6"
     ports:
       - 27017:27017
+    expose:
+      - "27017"
     volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ~/apps/mongo:/data/db
     environment:
+      - MONGO_INITDB_DATABASE=pokemon
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=S3cret

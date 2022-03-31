@@ -1,3 +1,4 @@
 Flask==2.1.0
 pymongo==4.0.2
 pokedex.py==1.1.2
+requests==2.27.1
