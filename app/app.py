@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 
-from mongo_client import db
-from pokemon import pokedex
+from app.mongo_client import db
+from app.pokemon import pokedex
 
 app = Flask(__name__)
 

@@ -1,7 +1,7 @@
 import requests  # to get image from the web
 import shutil  # to save it locally
 
-from mongo_client import db
+from app.mongo_client import db
 
 
 pokemon_coll = db.pokemon

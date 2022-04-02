@@ -1,7 +1,7 @@
 import time
 
-from mongo_client import db
-from pokemon import pokedex
+from app.mongo_client import db
+from app.pokemon import pokedex
 
 
 pokemon_coll = db.pokemon
