@@ -12,6 +12,8 @@ services:
     environment:
       FLASK_ENV: development
       PYTHONUNBUFFERED: 1
+    networks:
+      - esnet
   mongodb:
     image: "mongo:5.0.6"
     ports:
@@ -25,6 +27,8 @@ services:
       - MONGO_INITDB_DATABASE=pokemon
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=S3cret
+    networks:
+      - esnet
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.1.2
     container_name: elasticsearch
