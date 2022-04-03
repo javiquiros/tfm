@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+<!doctype html>
+
+{% block styles %}
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+  {% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>{{ title }}</h1>
+      <hr>
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Nombre</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pokemon in pokemon_coll %}
+        <tr>
+          <td>{{ pokemon.number }}</td>
+          <td>{{ pokemon.name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+{% endblock %}
