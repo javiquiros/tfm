@@ -14,9 +14,13 @@ es_client = ElasticClient()
 
 @app.route("/")
 def index():
+    pokemon_in_db = mongo_db.pokemon.count_documents({})
+    pokemon_in_elastic = es_client.count_documents()
+    indexed_images_percentage = round((pokemon_in_elastic / pokemon_in_db) * 100, 2)
     return render_template('dashboard.html', title='Pokemon collection',
-                           pokemon_in_db=mongo_db.pokemon.count_documents({}),
-                           pokemon_in_elastic=es_client.count_documents())
+                           pokemon_in_db=pokemon_in_db,
+                           pokemon_in_elastic=pokemon_in_elastic,
+                           indexed_images_percentage=indexed_images_percentage)
 
 
 @app.route("/pokemon/list")
