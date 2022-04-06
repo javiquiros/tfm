@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch
+from elasticsearch import BadRequestError, Elasticsearch, NotFoundError
 
 
 class ElasticClient:
@@ -10,9 +10,16 @@ class ElasticClient:
         self.es = Elasticsearch(self.host, http_auth=(self.user, self.password))
 
     def index_document(self, doc):
-        resp = self.es.index(index=self.index, id=doc["id"], document=doc)
-        self.es.indices.refresh(index=self.index)
-        return resp['result']
+        if "id" not in doc.keys():
+            doc["id"] = doc["_id"]
+        doc.pop("_id")
+        try:
+            resp = self.es.index(index=self.index, id=doc["id"], document=doc)
+            self.es.indices.refresh(index=self.index)
+            return resp['result']
+        except BadRequestError:
+            return False
+        
 
     def get_document_by_id(self, id):
         resp = self.es.get(index=self.index, id=id)
@@ -23,9 +30,14 @@ class ElasticClient:
         return resp['hits']['hits']
 
     def count_documents(self):
-        self.index_document({"id": 1, "test": "test"})
-        self.es.indices.refresh(index=self.index)
+        try:
+            self.es.indices.refresh(index=self.index)
+        except NotFoundError:
+            return 0
         return self.es.count(index=self.index)["count"]
 
     def delete_index(self):
-        self.es.indices.delete(index=self.index)
+        try:
+            self.es.indices.delete(index=self.index)
+        except NotFoundError:
+            pass
