@@ -1,8 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, request
+from threading import Thread
+
 
 from app.elastic_client import ElasticClient
 from app.mongo_client import mongo_db
 from app.pokemon import pokedex
+from app.tasks import indexing_task
 
 app = Flask(__name__,
             static_url_path="",
@@ -27,6 +30,27 @@ def index():
 def pokemon():
     return render_template('pokemon_table.html', title='Pokemon collection',
                            pokemon_coll=mongo_db.pokemon.find().sort("_id").limit(5))
+
+
+# Ajax requests
+@app.route('/count_indexed_images')
+def count_indexed_images():
+    return jsonify(count=es_client.count_documents())
+
+
+@app.route('/index_images')
+def index_images():
+    thread = Thread(target=indexing_task)
+    thread.daemon = True
+    thread.start()
+    return jsonify({'thread_name': str(thread.name),
+                    'started': True})
+
+
+@app.route('/delete_index')
+def delete_index():
+    es_client.delete_index()
+    return jsonify({'ok'})
 
 
 if __name__ == '__main__':
