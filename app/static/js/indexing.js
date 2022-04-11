@@ -1,4 +1,8 @@
 $(function() {
+    $('#refresh-btn').bind('click', function() {
+        location.reload();
+    });
+
     $('a#populate-db-btn').bind('click', function() {
         $.getJSON($SCRIPT_ROOT + '/populate_db', function(data) {
         });
