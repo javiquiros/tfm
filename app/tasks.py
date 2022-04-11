@@ -1,12 +1,17 @@
+import json
 import os
+import time
+
+import numpy as np
 from PIL import Image
+from tensorflow.keras.applications.efficientnet import EfficientNetB2
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.vgg16 import preprocess_input
 
 from app.elastic_client import ElasticClient
-from app.image_processor import ImageProcessor
 from app.mongo_client import mongo_db
 
 es_client = ElasticClient()
-image_processor = ImageProcessor()
 
 
 def root_dir():  # pragma: no cover
@@ -14,13 +19,40 @@ def root_dir():  # pragma: no cover
 
 
 def indexing_task():
-    path = os.path.join(root_dir(), "static", "images")
+    print("start")
+    start = time.time()
+    es_client.create_index()
+    path = os.path.join("app", "static", "images")
     files = os.listdir(path)
+    count = 0
     for file in files:
         image = Image.open(os.path.join(path, file))
-        features = image_processor.extract_features(image)
+        filename = os.path.splitext(file)[0]
+        print(filename)
+
+        # If already exists, skip
+        if es_client.get_document_by_id(filename):
+            continue
+        image = image.convert('RGBA')
+        features = image_to_vector(image)
         doc = {
-            "id": os.path.splitext(file)[0],
-            "vector": features
+            "id": filename,
+            "image_vector": features.tolist()
         }
         es_client.index_document(doc)
+        count += 1
+        print(count)
+    print(f"Execution time: {time.time() - start}")
+
+
+def image_to_vector(img: np.ndarray) -> np.ndarray:
+    model = EfficientNetB2(weights='imagenet')
+    input_shape = 260
+
+    img = img.resize((input_shape, input_shape))
+    img = img.convert('RGB')
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    preds = model.predict(x)[0]
+    return preds / np.linalg.norm(preds)
