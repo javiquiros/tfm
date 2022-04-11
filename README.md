@@ -5,6 +5,8 @@ Este proyecto se corresponde con el Trabajo Fin de Máster de Business Analytics
 
 El proyecto consiste en evaluar la búsqueda de imágenes similares en una colección de imágenes de Pokémon a partir de una imagen introducida.
 
+Los datos se han obtenido de [pokedex.py](https://pypi.org/project/pokedex.py/).
+
 # Puesta en marcha
 
 Es necesario tener instalado [Docker](https://www.docker.com/) y [Docker-Compose](https://docs.docker.com/compose/).
