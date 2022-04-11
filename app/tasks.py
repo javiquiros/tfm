@@ -56,3 +56,14 @@ def image_to_vector(img: np.ndarray) -> np.ndarray:
     x = preprocess_input(x)
     preds = model.predict(x)[0]
     return preds / np.linalg.norm(preds)
+
+
+def populate_db_task():
+    mongo_db.pokemon.drop()
+    print("Pokemon collection deleted")
+
+    with open('dump_db/pokemon.json') as f:
+        file_data = json.load(f)
+
+    mongo_db.pokemon.insert_many(file_data)
+    print("Database restored")

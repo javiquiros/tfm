@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 
 from app import mongo_client
 from app.elastic_client import ElasticClient
-from app.tasks import image_to_vector, indexing_task
+from app.tasks import image_to_vector, indexing_task, populate_db_task
 
 UPLOAD_FOLDER = 'app/static/uploads/'
 
@@ -27,7 +27,7 @@ es_client = ElasticClient()
 def index():
     pokemon_in_db = mongo_client.count_documents()
     pokemon_in_elastic = es_client.count_documents()
-    indexed_images_percentage = round((pokemon_in_elastic / pokemon_in_db) * 100, 2)
+    indexed_images_percentage = round((pokemon_in_elastic / pokemon_in_db) * 100, 2) if pokemon_in_db else 0
     return render_template('dashboard.html', title='Pokemon collection',
                            pokemon_in_db=pokemon_in_db,
                            pokemon_in_elastic=pokemon_in_elastic,
@@ -59,6 +59,15 @@ def index_images():
 def delete_index():
     es_client.delete_index()
     return jsonify({"status": "ok"})
+
+
+@app.route('/populate_db')
+def populate_db():
+    thread = Thread(target=populate_db_task)
+    thread.daemon = True
+    thread.start()
+    return jsonify({'thread_name': str(thread.name),
+                    'started': True})
 
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])

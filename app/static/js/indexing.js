@@ -1,4 +1,10 @@
 $(function() {
+    $('a#populate-db-btn').bind('click', function() {
+        $.getJSON($SCRIPT_ROOT + '/populate_db', function(data) {
+        });
+        return false;
+    });
+
     $('a#start-indexing-btn').bind('click', function() {
         $.getJSON($SCRIPT_ROOT + '/index_images', function(data) {
             console.log(data);
